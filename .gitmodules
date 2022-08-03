@@ -1,0 +1,3 @@
+[submodule "OpenSLO"]
+	path = OpenSLO
+	url = git@github.com:OpenSLO/OpenSLO.git
