@@ -19,4 +19,4 @@ spec:
       isRolling: true
   # budgetingMethod: Occurrences # If not provided, the implied default is "Occurrences"
   objectives:
-    - targetPercent: 99
+    - targetPercent: 99.95
