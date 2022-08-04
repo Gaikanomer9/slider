@@ -64,7 +64,7 @@ def generate(slider_gen, src):
             files.extend(glob(f"{f}/*"))
     for spec in files:
         if spec[-5:] != ".yaml":
-            click.echo(f'File {spec} is skipped because only .yaml type is suppored')
+            click.echo(f'File {spec} is skipped because only .yaml type is supported')
             continue
         
         with open(spec) as f2:

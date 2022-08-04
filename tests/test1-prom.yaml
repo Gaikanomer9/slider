@@ -1,0 +1,12 @@
+# This is the non-optimized implementation, but let's start somewhere
+# (For short enough time windows this is exactly what the expression would be)
+groups:
+- name: slider1 # this will get a proper name
+  rules:
+  - record: slo:success:ratio
+    expr: sum(rate(http_requests{type="good"}[28d])) 
+      /   sum(rate(http_requests{}[28d]))
+    labels:
+      id: test1
+      window: 28d
+      budgeting_method: occurrences
