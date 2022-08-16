@@ -1,6 +1,6 @@
-# slidergen
+# Slider
 
-Slidergen is the CLI tool that creates Prometheus alerts and rules on the given OpenSLO specification files.
+Slider is the CLI tool that creates Prometheus alerts and rules on the given OpenSLO specification files.
 
 ## System
 
@@ -25,7 +25,7 @@ pip install --editable .
 Some example SLOs are provided in the examples directory. To get started run:
 
 ```
-slidergen generate ../examples/slo-getting-started.yaml
+slider generate ../examples/slo-getting-started.yaml
 ```
 
-Or run `slidergen generate ../examples` to load specs from the directory and all subdirectories.
+Or run `slider generate ../examples` to load specs from the directory and all subdirectories.

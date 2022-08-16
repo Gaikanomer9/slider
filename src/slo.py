@@ -1,18 +1,16 @@
+from decimal import Decimal
 import json
-import logging
-from logging import log
-import yaml
-from yaml import Loader
-from jsonschema import validate
-from pathlib import Path
-import requests
+import os
+from dataclasses import dataclass
+import string
+from typing import Any, Dict, Union, List
 
+from jsonschema import validate
 from jsonschema.validators import RefResolver
 from jsonschema import ValidationError, SchemaError
-import re 
-import os
 
-COMMIT_SHA_OPENSLO_SCHEMA="ca2b59332b6fed9814f1b466877859b4ef68cb2b"
+COMMIT_SHA_OPENSLO_SCHEMA = "ca2b59332b6fed9814f1b466877859b4ef68cb2b"
+
 OPENSLO_SCHEMA_FILES = (
     "openslo.schema.json",
     "parts/alertcondition-spec.schema.json",
@@ -32,43 +30,84 @@ OPENSLO_SCHEMA_FILES = (
 )
 
 
+@dataclass
+class Metadata:
+    name: str
+    displayName: str
 
 
+@dataclass
+class MetricSource:
+    type: str
+    spec: Any
 
-        
 
-class Validator():
-    def __init__(self):
-        self.schemastore = self.loadSchemaFromGithub()
+@dataclass
+class ThresholdMetric:
+    metricSource: MetricSource
 
-    def validate_spec(self, json_data, schema_id):
-        """
-        load the json file and validate against loaded schema
-        """
-        try:
-            schema = self.schemastore.get("https://openslo.com/schemas/v1/parts/%s" % schema_id)
-            resolver = RefResolver("https://openslo.com", schema, self.schemastore)
-            validate(json_data, schema, resolver=resolver)
-        except ValidationError as error:
-            return (False, error)
-        except SchemaError as error:
-            return (False, error)
-        return True, None
 
-    
-    def loadSchemaFromGithub(self):
-        schemastore = {}
-        for schema_id in OPENSLO_SCHEMA_FILES:
-            url = f'https://raw.githubusercontent.com/OpenSLO/OpenSLO/{COMMIT_SHA_OPENSLO_SCHEMA}/schemas/v1/{schema_id}'
-            try:
-                schema = requests.get(url).json()
-            except Exception as err:
-                log(logging.ERROR, f'Failed to fetch the url {url}')
-                log(logging.ERROR, str(err))
-                os._exit(1)
-            if "$id" in schema:
-                schemastore[schema["$id"]] = schema
-        return schemastore
+@dataclass
+class RatioMetric:
+    counter: bool
+    good: ThresholdMetric
+    bad: ThresholdMetric
+    total: ThresholdMetric
+
+
+@dataclass
+class Indicator:
+    metadata: Metadata
+    spec: Union[ThresholdMetric, RatioMetric]
+
+
+@dataclass
+class WindowCalendar:
+    startTime: str
+    timeZone: str
+
+
+@dataclass
+class TimeWindow:
+    duration: str
+    isRolling: bool
+
+
+@dataclass
+class Target:
+    displayName: str
+    op: str
+    value: Decimal
+    target: Decimal
+    timeSliceTarget: Decimal
+    timeSliceWindow: str
+
+
+@dataclass
+class SLOSpec:
+    description: str
+    service: string
+    indicator: Indicator
+    timeWindow: List[TimeWindow]
+    budgetingMethod: str
+    objectives: List[Target]
+
+
+@dataclass
+class SLO:
+    """
+    SLO class represents an internal SLO object which takes only part
+    of data from OpenSLO specification. It supports loading, validation
+    and generation of the Prometheus rules.
+    """
+    apiVersion: str
+    kind: str
+    metadata: Metadata
+    spec: SLOSpec
+
+
+def build_slo_from_yaml(parsed_yaml: Dict[Any, Any]) -> SLO:
+    return SLO(**parsed_yaml)
 
 
 
@@ -87,9 +126,12 @@ def validateSpecFromLocal(schema_search_abs_path, json_data, schema_id):
     """
     try:
         schemastore = loadSchemaFromFiles(schema_search_abs_path)
-        schema = schemastore.get("https://openslo.com/schemas/v1/parts/%s" % schema_id)
+        schema = schemastore.get("https://openslo.com/schemas/v1/parts/%s" %
+                                 schema_id)
 
-        resolver = RefResolver("file:/%s" % os.path.join(schema_search_abs_path, schema_id), schema, schemastore)
+        resolver = RefResolver("file:/%s" %
+                               os.path.join(schema_search_abs_path, schema_id),
+                               schema, schemastore)
         validate(json_data, schema, resolver=resolver)
         return True
     except ValidationError as error:
@@ -122,17 +164,17 @@ def loadSchemaFromFiles(schema_search_abs_path: str) -> dict:
     return schemastore
 
 
-
-    
-
+# vld = Validator()
 # with open("examples/slo-getting-started.yaml") as f2:
 #     testSLO = yaml.load(f2, Loader)
 
-# if validate_spec(testSLO, "slo-spec.schema.json"):
+# sloObject = dict_to_slo(testSLO)
+
+
+# if vld.validate_spec(testSLO, "slo-spec.schema.json"):
 #     print("Schema was valid")
-
 # with open("examples/slo-getting-started.yaml") as f2:
 #     testSLO = yaml.load(f2, Loader)
-
-# if validateSpecFromLocal(os.getcwd()+"/OpenSLO", testSLO, "slo-spec.schema.json"):
+# if validateSpecFromLocal(os.getcwd()+"/OpenSLO", testSLO
+# # "slo-spec.schema.json"):
 #     print("Schema was valid")

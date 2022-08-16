@@ -1,20 +1,22 @@
 import os
 import sys
 from glob import glob
+from typing import List
 import yaml
 from yaml import Loader
-from slo import Validator
+from slo import SLO, build_slo_from_yaml
+from validator import Validator
 from rules import generate_rules
 
 import click
 
 
-class SliderGen:
+class Slider:
     def __init__(self):
         self.config = {}
         self.verbose = False
         self.validator = Validator()
-        self.rules = {}
+        self.slos = {}
 
     def set_config(self, key, value):
         self.config[key] = value
@@ -22,7 +24,7 @@ class SliderGen:
             click.echo(f"  config[{key}] = {value}", file=sys.stderr)
 
 
-pass_slider_gen = click.make_pass_decorator(SliderGen)
+pass_slider = click.make_pass_decorator(Slider)
 
 @click.group()
 @click.option(
@@ -36,10 +38,10 @@ pass_slider_gen = click.make_pass_decorator(SliderGen)
 @click.version_option("1.0")
 @click.pass_context
 def cli(ctx, config, verbose):
-    """SliderGen is a command line tool that creates
+    """Slider is a command line tool that creates
     Prometheus rules on the given OpenSLO specification.
     """
-    ctx.obj = SliderGen()
+    ctx.obj = Slider()
     ctx.obj.verbose = verbose
     for key, value in config:
         ctx.obj.set_config(key, value)
@@ -48,8 +50,8 @@ def cli(ctx, config, verbose):
 
 @cli.command()
 @click.argument("src", required=True)
-@pass_slider_gen
-def generate(slider_gen, src):
+@pass_slider
+def generate(slider, src):
     """Generates Prometheus rules on the given
     OpenSLO spec files.
 
@@ -68,12 +70,18 @@ def generate(slider_gen, src):
             continue
         
         with open(spec) as f2:
-            sloObj = yaml.load(f2, Loader)
-
-        valid, error = slider_gen.validator.validate_spec(sloObj, "slo-spec.schema.json")
-        if not valid:
-            click.echo(f'File {spec} is not a valid Open SLO specification: {error}')
-            continue
+            docs = yaml.load_all(f2, Loader)
+            for doc in docs:
+                valid, error = slider.validator.validate_spec(doc, "slo-spec.schema.json")
+                if not valid:
+                    click.echo(f'File {spec} is not a valid Open SLO specification: {error}')
+                    continue
+                slo_parsed = build_slo_from_yaml(doc)
+                slo_name = slo_parsed.metadata.get("name")
+                if slo_name in slider.slos:
+                    raise ValueError(f'Found a duplicate SLO name {slo_name}, aborting')
+                slider.slos[slo_name] = slo_parsed
         
-        generate_rules(sloObj)
+    for slo in slider.slos:
+        generate_rules(slider.slos[slo])
 

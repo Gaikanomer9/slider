@@ -1,13 +1,13 @@
 from setuptools import setup
 
 setup(
-    name="slidergen",
+    name="slider",
     version="0.1",
-    py_modules=["slider-gen"],
+    py_modules=["slider"],
     include_package_data=True,
     install_requires=["click"],
     entry_points="""
         [console_scripts]
-        slidergen=slidergen:cli
+        slider=slider:cli
     """,
 )

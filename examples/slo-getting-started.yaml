@@ -40,3 +40,34 @@ spec:
   objectives:
     - displayName: Foo Total Errors
       target: 0.98
+---
+apiVersion: openslo/v1
+kind: SLO
+metadata:
+  name: simple-slo
+  displayName: Simple SLO
+spec:
+  description: test slo
+  service: slider
+  indicator:
+    metadata:
+      name: events-counter
+      displayName: Events Counter
+    spec:
+      ratioMetric:
+        counter: true
+        good:
+          metricSource:
+            spec:
+              query: results{code="good"}
+        total:
+          metricSource:
+            spec:
+              query: results{}
+  timeWindow:
+    - duration: 7d
+      isRolling: true
+  budgetingMethod: Occurrences
+  objectives:
+    - displayName: All Total Errors
+      target: 0.98
