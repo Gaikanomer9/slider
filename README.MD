@@ -1,6 +1,6 @@
-# Slider
+# SLIDER – _SLI_ *D*ashboards, *E*valuation and Ale*R*ting
 
-Slider is the CLI tool that creates Prometheus alerts and rules on the given OpenSLO specification files.
+Slider is a CLI tool that creates Prometheus recording and alerting rules and Grafana dashboard configs based on provided SLO specifications in [OpenSLO](https://openslo.com/) format.
 
 ## System
 
