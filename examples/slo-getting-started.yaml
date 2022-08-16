@@ -34,8 +34,6 @@ spec:
   timeWindow:
     - duration: 7d
       isRolling: true
-      calendar:
-        timeZone: America/New_York
   budgetingMethod: Occurrences
   objectives:
     - displayName: Foo Total Errors
