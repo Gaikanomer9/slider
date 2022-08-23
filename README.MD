@@ -25,7 +25,13 @@ pip install --editable .
 Some example SLOs are provided in the examples directory. To get started run:
 
 ```
-slider generate ../examples/slo-getting-started.yaml
+slider generate ../tests/test1-openslo.yaml
 ```
 
-Or run `slider generate ../examples` to load specs from the directory and all subdirectories.
+To verify run:
+
+```
+slider verify ../tests/test1-openslo.yaml
+```
+
+Or run `slider g ../examples` to load specs from the directory and all subdirectories.

@@ -1,7 +1,6 @@
 from decimal import Decimal
 from dataclasses import dataclass, field
-import string
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, List
 
 COMMIT_SHA_OPENSLO_SCHEMA = "ca2b59332b6fed9814f1b466877859b4ef68cb2b"
 
@@ -25,34 +24,56 @@ OPENSLO_SCHEMA_FILES = (
 
 @dataclass
 class Metadata:
-    name: str
-    displayName: str
+    name: str = field(default_factory=lambda: "")
+    displayName: str = field(default_factory=lambda: "")
     annotations: dict = field(default_factory=lambda: {})
 
 
 @dataclass
 class MetricSource:
-    type: str
-    spec: Any
+    type: str = field(default_factory=lambda: None)
+    spec: Any = field(default_factory=lambda: None)
 
 
 @dataclass
 class ThresholdMetric:
-    metricSource: MetricSource
+    metricSource: MetricSource = field(default_factory=lambda: None)
+
+    def __post_init__(self):
+        if self.metricSource is not None:
+            self.metricSource = MetricSource(**self.metricSource)
 
 
 @dataclass
 class RatioMetric:
-    counter: bool
-    good: ThresholdMetric
-    bad: ThresholdMetric
-    total: ThresholdMetric
+    counter: bool = field(default_factory=lambda: None)
+    good: ThresholdMetric = field(default_factory=lambda: None)
+    bad: ThresholdMetric = field(default_factory=lambda: None)
+    total: ThresholdMetric = field(default_factory=lambda: None)
+
+    def __post_init__(self):
+        if self.good is not None:
+            self.good = ThresholdMetric(**self.good)
+        if self.bad is not None:
+            self.bad = ThresholdMetric(**self.bad)
+        if self.total is not None:
+            self.total = ThresholdMetric(**self.total)
 
 
 @dataclass
 class Indicator:
-    metadata: Metadata
-    spec: Union[ThresholdMetric, RatioMetric]
+    metadata: Metadata = field(default_factory=lambda: None)
+    thresholdMetric: ThresholdMetric = field(
+        default_factory=lambda: None)
+    ratioMetric: RatioMetric = field(default_factory=lambda: None)
+
+    def __post_init__(self):
+        if self.metadata is not None:
+            self.metadata = Metadata(**self.metadata)
+        if self.thresholdMetric is not None:
+            self.thresholdMetric = ThresholdMetric(**self.thresholdMetric)
+        if self.ratioMetric is not None:
+            self.ratioMetric = RatioMetric(**self.ratioMetric)
 
 
 @dataclass
@@ -69,22 +90,34 @@ class TimeWindow:
 
 @dataclass
 class Target:
-    displayName: str
-    op: str
-    value: Decimal
-    target: Decimal
-    timeSliceTarget: Decimal
-    timeSliceWindow: str
+    displayName: str = field(default_factory=lambda: None)
+    op: str = field(default_factory=lambda: None)
+    value: Decimal = field(default_factory=lambda: None)
+    target: Decimal = field(default_factory=lambda: None)
+    targetPercent: Decimal = field(default_factory=lambda: None)
+    timeSliceTarget: Decimal = field(default_factory=lambda: None)
+    timeSliceWindow: str = field(default_factory=lambda: None)
 
 
 @dataclass
 class SLOSpec:
-    description: str
-    service: string
     indicator: Indicator
     timeWindow: List[TimeWindow]
-    budgetingMethod: str
     objectives: List[Target]
+    description: str = field(default_factory=lambda: "")
+    service: str = field(default_factory=lambda: "")
+    budgetingMethod: str = field(default_factory=lambda: "")
+
+    def __post_init__(self):
+        self.indicator = Indicator(**self.indicator)
+        time_windows = []
+        for window in self.timeWindow:
+            time_windows.append(TimeWindow(**window))
+        self.timeWindow = time_windows
+        objs = []
+        for objective in self.objectives:
+            objs.append(Target(**objective))
+        self.objectives = objs
 
 
 @dataclass
