@@ -57,12 +57,14 @@ class Validator():
                 'Objectives and timeWindow list should contain'
                 ' exactly 1 item each in the array.'
             )
-        if (windows[0].isRolling is False):
-            raise ValueError(
-                'The only time window option supported now'
-                ' is the rolling. Parameter isRolling should be set'
-                ' to true and calendar should be omitted'
-            )
+        # once https://github.com/OpenSLO/OpenSLO/issues/169 is merged bring this back but as
+        # checking for spec.calendar being present
+#        if (windows[0].isRolling is False):
+#            raise ValueError(
+#                'The only time window option supported now'
+#                ' is the rolling. Parameter isRolling should be set'
+#                ' to true and calendar should be omitted'
+#            )
         if (slo.spec.indicator.ratioMetric is None
            and slo.spec.indicator.thresholdMetric is None):
             raise ValueError(

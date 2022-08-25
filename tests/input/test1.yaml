@@ -16,7 +16,6 @@ spec:
             query: http_requests{}
   timeWindow:
     - duration: 28d
-      isRolling: true
   # budgetingMethod: Occurrences # If not provided, the implied default is "Occurrences"
   objectives:
-    - targetPercent: 99.95
+    - targetPercent: 99.01

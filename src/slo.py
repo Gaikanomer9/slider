@@ -77,21 +77,15 @@ class Indicator:
 
 
 @dataclass
-class WindowCalendar:
-    startTime: str
-    timeZone: str
-
-
-@dataclass
 class TimeWindow:
     duration: str
-    isRolling: bool
 
 
 @dataclass
 class Target:
     displayName: str = field(default_factory=lambda: None)
     op: str = field(default_factory=lambda: None)
+    # BUG: these seem to end up as floats
     value: Decimal = field(default_factory=lambda: None)
     target: Decimal = field(default_factory=lambda: None)
     targetPercent: Decimal = field(default_factory=lambda: None)
@@ -140,6 +134,7 @@ class SLO:
         self.id = self.metadata.name # TODO: make sure these are unique
         self.indicator = self.spec.indicator
         self.window = self.spec.timeWindow[0].duration # Implied rolling window; calendar-aligned not supported
+        # TODO: make sure all of these are Decimals
         if self.spec.objectives[0].targetPercent:
             self.targetPercent = self.spec.objectives[0].targetPercent
             self.target = self.targetPercent / 100
