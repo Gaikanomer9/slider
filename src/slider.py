@@ -23,12 +23,11 @@ class Slider:
             click.echo(f"  config[{key}] = {value}", file=sys.stderr)
 
     def validate_all(self):
-        for slo in self.slos:
-            self.validator.validate_slo(self.slos[slo])
+        for slo in self.slos.values():
+            self.validator.validate_slo(slo)
 
     def generate_all(self):
-        for slo in self.slos:
-            generate_rules(self.slos[slo])
+        generate_rules(self.slos.values())
 
     def read_yaml_files(self, src):
         files = glob(f"{src}/*")

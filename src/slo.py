@@ -137,6 +137,7 @@ class SLO:
         self.spec = SLOSpec(**self.spec)
 
         # Let's make the object easier to use
+        self.id = self.metadata.name # TODO: make sure these are unique
         self.indicator = self.spec.indicator
         self.window = self.spec.timeWindow[0].duration # Implied rolling window; calendar-aligned not supported
         if self.spec.objectives[0].targetPercent:

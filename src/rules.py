@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from slo import SLO
-from typing import List
+from typing import List, Iterator
 import yaml
 import click
 
@@ -23,6 +23,7 @@ class Rule(yaml.YAMLObject):
 class RuleGroup:
     yaml_tag = u'!RuleGroup'
 
+    # TODO: figure out how to make 'rules' display as last item in yaml output
     name: str
     rules: List[Rule]
     interval: str = field(default_factory=lambda: None)
@@ -48,25 +49,36 @@ yaml.add_representer(RuleGroup, prom_representer)
 yaml.add_representer(Groups, prom_representer)
 
 
-def generate_rules(slo: SLO) -> object:
-    expression = ""
-    rules = []
-    if slo.indicator.ratioMetric is not None:
-        g_rt = slo.indicator.ratioMetric.good.metricSource.spec.get("query")
-        t_rt = slo.indicator.ratioMetric.total.metricSource.spec.get("query")
-        expression = f'sum(rate({g_rt}[{slo.window}])) / sum(rate({t_rt}[{slo.window}]))'
-
-        rule = Rule()
-        rule.record = "slo:success:ratio"
-        rule.expr = expression
-        rule.labels = {
-            "id": slo.metadata.name,
-            "name": slo.metadata.name,
+def generate_rules(slos: Iterator[SLO]) -> object:
+    success_group_rules = []
+    info_group_rules = []
+    for slo in slos:
+        if slo.indicator.ratioMetric is not None:
+            g_rt = slo.indicator.ratioMetric.good.metricSource.spec.get("query")
+            t_rt = slo.indicator.ratioMetric.total.metricSource.spec.get("query")
+            expression = f'sum(rate({g_rt}[{slo.window}])) / sum(rate({t_rt}[{slo.window}]))'
+            success_ratio = Rule()
+            success_ratio.record = "slo:success:ratio"
+            success_ratio.expr = expression
+            success_ratio.labels = {
+                "id": slo.id,
+                "window": slo.window,
+                "target": slo.target,
+            }
+            success_group_rules.append(success_ratio)
+        info_target = Rule()
+        info_target.record = "slo:info:target"
+        info_target.expr = f'vector({slo.target})'
+        info_target.labels = {
+            "id": slo.id,
             "window": slo.window,
             "target": slo.target,
             "budgeting_method": "occurrences"
         }
-        rules.append(rule)
-    rule_groups = [RuleGroup(name="slider1", rules=rules)]
+        info_group_rules.append(info_target)
+    rule_groups = [
+        RuleGroup(name="slider-slo-success-calculations", rules=success_group_rules),
+        RuleGroup(name="slider-slo-info-metadata-logging", interval="2m30s", rules=info_group_rules)
+    ]
     group = Groups(groups=rule_groups)
     click.echo(yaml.dump(group, sort_keys=False))
