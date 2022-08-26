@@ -136,6 +136,16 @@ class SLO:
         self.metadata = Metadata(**self.metadata)
         self.spec = SLOSpec(**self.spec)
 
+        # Let's make the object easier to use
+        self.indicator = self.spec.indicator
+        self.window = self.spec.timeWindow[0].duration # Implied rolling window; calendar-aligned not supported
+        if self.spec.objectives[0].targetPercent:
+            self.targetPercent = self.spec.objectives[0].targetPercent
+            self.target = self.targetPercent / 100
+        elif self.spec.objectives[0].target:
+            self.target = self.spec.objectives[0].target
+            self.targetPercent = self.target * 100
+
 
 def build_slo_from_yaml(parsed_yaml: Dict[Any, Any]) -> SLO:
     return SLO(**parsed_yaml)

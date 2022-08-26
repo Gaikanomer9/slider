@@ -49,24 +49,21 @@ yaml.add_representer(Groups, prom_representer)
 
 
 def generate_rules(slo: SLO) -> object:
-
-    indicator = slo.spec.indicator
-    time_window = slo.spec.timeWindow
     expression = ""
     rules = []
-    if indicator.ratioMetric is not None:
-        g_rt = indicator.ratioMetric.good.metricSource.spec.get("query")
-        t_rt = indicator.ratioMetric.total.metricSource.spec.get("query")
-        w = time_window[0].duration
-        expression = f'sum(rate({g_rt}[{w}])) / sum(rate({t_rt}[{w}]))'
+    if slo.indicator.ratioMetric is not None:
+        g_rt = slo.indicator.ratioMetric.good.metricSource.spec.get("query")
+        t_rt = slo.indicator.ratioMetric.total.metricSource.spec.get("query")
+        expression = f'sum(rate({g_rt}[{slo.window}])) / sum(rate({t_rt}[{slo.window}]))'
+
         rule = Rule()
         rule.record = "slo:success:ratio"
         rule.expr = expression
         rule.labels = {
             "id": slo.metadata.name,
             "name": slo.metadata.name,
-            "window": w,
-            "target": slo.spec.objectives[0].targetPercent / 100,
+            "window": slo.window,
+            "target": slo.target,
             "budgeting_method": "occurrences"
         }
         rules.append(rule)
