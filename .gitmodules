@@ -1,3 +1,6 @@
 [submodule "OpenSLO"]
 	path = OpenSLO
 	url = git@github.com:OpenSLO/OpenSLO.git
+[submodule "grafonnet-lib"]
+	path = grafonnet-lib
+	url = https://github.com/grafana/grafonnet-lib.git

@@ -1,0 +1,19 @@
+groups:
+  - name: slider-slo-success-calculations
+    rules:
+      - record: slo:success:ratio
+        expr: sum(rate(http_requests{type="good"}[7d])) / sum(rate(http_requests{}[7d]))
+        labels:
+          id: test2
+          window: 7d
+          target: 0.9902
+  - name: slider-slo-info-metadata-logging
+    rules:
+      - record: slo:info:target
+        expr: vector(0.9902)
+        labels:
+          id: test2
+          window: 7d
+          target: 0.9902
+          budgeting_method: occurrences
+    interval: 2m30s

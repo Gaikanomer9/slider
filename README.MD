@@ -25,13 +25,33 @@ pip install --editable .
 Some example SLOs are provided in the examples directory. To get started run:
 
 ```
-slider generate ../tests/test1-openslo.yaml
+slider generate ../tests/input/test1.yaml
 ```
 
 To verify run:
 
 ```
-slider verify ../tests/test1-openslo.yaml
+slider verify ../tests/input/test1.yaml
 ```
 
 Or run `slider g ../examples` to load specs from the directory and all subdirectories.
+
+### Working with dashboards
+
+For Grafana dashboard generation the jsonnet templating engine is used as an official and recommended way of working with Grafana dashboards programmatically.
+
+To get started, execute the slider generation command:
+
+```
+cd src
+slider --config dashpath ../playground/grafana/provisioning/dashboards/table.json g ../tests/input/test1.yaml
+```
+
+Then spin up the local Prometheus stack with a sample service:
+
+```
+cd ../playground
+make run
+```
+
+Navigate to localhost:3000 and check the imported dashboard.
