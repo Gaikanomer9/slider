@@ -6,6 +6,7 @@ from yaml import Loader
 from slo import build_slo_from_yaml
 from validator import Validator
 from rules import generate_rules
+from dashboard import generate_dashboard
 
 import click
 
@@ -28,6 +29,11 @@ class Slider:
 
     def generate_all(self):
         generate_rules(self.slos.values())
+    
+    def gen_dashboard(self):
+        if "dashpath" not in self.config:
+            raise Exception("please specify the path to save the dashboard slider --config dashpath ../playground/grafana/provisioning/dashboards/table.json ")
+        generate_dashboard(self.slos, self.config.get("dashpath"))
 
     def read_yaml_files(self, src):
         files = glob(f"{src}/*")
@@ -120,3 +126,4 @@ def generate(slider, src):
     slider.read_yaml_files(src)
     slider.validate_all()
     slider.generate_all()
+    slider.gen_dashboard()
