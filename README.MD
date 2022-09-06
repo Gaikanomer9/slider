@@ -47,11 +47,15 @@ cd src
 slider --config dashpath ../playground/grafana/provisioning/dashboards/table.json g ../tests/input/test1.yaml
 ```
 
-Then spin up the local Prometheus stack with a sample service:
+Then spin up the local Prometheus stack with a sample service, you would need to clone the test app and start the services:
 
 ```
-cd ../playground
+cd ../.. # make sure to be in the directory that is above slider
+git clone git@github.com:Gaikanomer9/prometheus-fake-exporter.git
+cd slider/playground
 make run
 ```
+
+This would build a new service from the app cloned. This enables quick changes on the service for testing.
 
 Navigate to localhost:3000 and check the imported dashboard.
