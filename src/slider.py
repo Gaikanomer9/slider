@@ -115,15 +115,21 @@ def verify(slider, src):
 
 @cli.command()
 @click.argument("src", required=True)
+# https://github.com/pallets/click/issues/2351
+@click.option("-a", "--all", "gen_all", flag_value=1, default=True,
+                help="Generate both prom rules and dashboard config [default]")
+@click.option("-r", "--rules", "gen_all", flag_value=0,
+                help="Only generate recording and alerting rules, no dashboard")
 @pass_slider
-def generate(slider, src):
+def generate(slider, src, gen_all):
     """Generates Prometheus rules on the given
     OpenSLO spec files.
 
-    SRC is the directory containing OpenSLO specs.
+    SRC is a yaml file with an OpenSLO spec or a directory of such files.
     """
     # Load all files and perform validation against OpenSLO schema
     slider.read_yaml_files(src)
     slider.validate_all()
     slider.generate_all()
-    slider.gen_dashboard()
+    if gen_all:
+        slider.gen_dashboard()
