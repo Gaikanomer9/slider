@@ -24,6 +24,7 @@ OPENSLO_SCHEMA_FILES = (
 
 @dataclass
 class Metadata:
+    # TODO: enforce rules: few characters allowed in names (definitively no spaces)
     name: str = field(default_factory=lambda: "")
     displayName: str = field(default_factory=lambda: "")
     annotations: dict = field(default_factory=lambda: {})
@@ -99,6 +100,7 @@ class SLOSpec:
     timeWindow: List[TimeWindow]
     objectives: List[Target]
     description: str = field(default_factory=lambda: "")
+    # TODO: enforce rules: few characters allowed in services (definitively no spaces)
     service: str = field(default_factory=lambda: "")
     budgetingMethod: str = field(default_factory=lambda: "")
 
@@ -131,7 +133,11 @@ class SLO:
         self.spec = SLOSpec(**self.spec)
 
         # Let's make the object easier to use
-        self.id = self.metadata.name # TODO: make sure these are unique
+        # TODO: add --tenant to `slider generate`
+        self.tenant = ""
+        self.service = self.spec.service
+        self.name = self.metadata.name
+        self.id = f"{self.tenant}:{self.service}:{self.name}"
         self.indicator = self.spec.indicator
         self.window = self.spec.timeWindow[0].duration # Implied rolling window; calendar-aligned not supported
         # TODO: make sure all of these are Decimals

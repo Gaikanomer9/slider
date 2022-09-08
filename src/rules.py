@@ -71,6 +71,9 @@ def generate_rules(slos: Iterator[SLO]) -> object:
         info_target.expr = f'vector({slo.target})'
         info_target.labels = {
             "id": slo.id,
+            "tenant": slo.tenant,
+            "service": slo.service,
+            "name": slo.name,
             "window": slo.window,
             "target": slo.target,
             "budgeting_method": "occurrences"

@@ -3,6 +3,7 @@ kind: SLO
 metadata:
   name: test1
 spec:
+  service: web-server
   indicator:
     # counter: this shouldn't be required info, if it is in the schema, that needs correcting
     ratioMetric:
