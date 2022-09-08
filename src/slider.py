@@ -40,7 +40,6 @@ class Slider:
         if src[-5:] == '.yaml':
             files.append(src)
         for f in files:
-            print(f)
             if os.path.isdir(f):
                 files.extend(glob(f"{f}/*"))
         for spec in files:
