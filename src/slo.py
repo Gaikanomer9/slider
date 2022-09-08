@@ -133,11 +133,10 @@ class SLO:
         self.spec = SLOSpec(**self.spec)
 
         # Let's make the object easier to use
-        # TODO: add --tenant to `slider generate`
         self.tenant = ""
         self.service = self.spec.service
         self.name = self.metadata.name
-        self.id = f"{self.tenant}:{self.service}:{self.name}"
+        self.gen_id()
         self.indicator = self.spec.indicator
         self.window = self.spec.timeWindow[0].duration # Implied rolling window; calendar-aligned not supported
         # TODO: make sure all of these are Decimals
@@ -147,6 +146,13 @@ class SLO:
         elif self.spec.objectives[0].target:
             self.target = self.spec.objectives[0].target
             self.targetPercent = self.target * 100
+
+    def gen_id(self):
+        self.id = f"{self.tenant}:{self.service}:{self.name}"
+
+    def set_tenant(self, tenant: str):
+        self.tenant = tenant
+        self.gen_id()
 
 
 def build_slo_from_yaml(parsed_yaml: Dict[Any, Any]) -> SLO:

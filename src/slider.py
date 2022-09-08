@@ -17,6 +17,7 @@ class Slider:
         self.verbose = False
         self.validator = Validator()
         self.slos = {}
+        self.tenant = ""
 
     def set_config(self, key, value):
         self.config[key] = value
@@ -51,6 +52,7 @@ class Slider:
                 docs = yaml.load_all(f2, Loader)
                 for doc in docs:
                     slo_parsed = build_slo_from_yaml(doc)
+                    slo_parsed.set_tenant(self.tenant)
                     slo_name = slo_parsed.metadata.name
                     if slo_name in self.slos:
                         raise ValueError(
@@ -114,18 +116,22 @@ def verify(slider, src):
 
 @cli.command()
 @click.argument("src", required=True)
+@click.option("--tenant", type=str,
+                help="Define a tenant for the SLOs being processed")
 # https://github.com/pallets/click/issues/2351
 @click.option("-a", "--all", "gen_all", flag_value=1, default=True,
                 help="Generate both prom rules and dashboard config [default]")
 @click.option("-r", "--rules", "gen_all", flag_value=0,
                 help="Only generate recording and alerting rules, no dashboard")
 @pass_slider
-def generate(slider, src, gen_all):
+def generate(slider, src, tenant, gen_all):
     """Generates Prometheus rules on the given
     OpenSLO spec files.
 
     SRC is a yaml file with an OpenSLO spec or a directory of such files.
     """
+    if tenant:
+        slider.tenant = tenant
     # Load all files and perform validation against OpenSLO schema
     slider.read_yaml_files(src)
     slider.validate_all()
