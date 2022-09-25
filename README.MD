@@ -36,6 +36,27 @@ slider verify ../tests/input/test1.yaml
 
 Or run `slider g ../examples` to load specs from the directory and all subdirectories.
 
+### Working with Docker image
+
+First, create a local image:
+
+```
+make build_image
+```
+
+After that add a new alias to your .bashrc or command line config file:
+
+```
+alias slider="docker run -it -v $(pwd):$(pwd) --rm slider_image"
+```
+
+After that you can use Slider without installation but because your current pwd would be attached as volume in container, make sure test files you submit are in the subdirectories and your provide absolute paths to them. For example,
+
+```
+# running this from the root directory of this repo
+slider --config dashpath $(pwd)/playground/grafana/provisioning/dashboards/table.json g $(pwd)/tests/input/test1.yaml
+```
+
 ### Working with dashboards
 
 For Grafana dashboard generation the jsonnet templating engine is used as an official and recommended way of working with Grafana dashboards programmatically.
