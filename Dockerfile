@@ -1,20 +1,34 @@
-FROM python:3.9
-
+# STAGE
+FROM python:3.9 AS install-reqs
 WORKDIR /app/src
 
-COPY grafonnet-lib /app/grafonnet-lib
-COPY OpenSLO /app/OpenSLO
+RUN python -m venv /app/slider
+ENV PATH="/app/slider/bin:$PATH"
 
-COPY slider /app/src/slider
-COPY requirements.txt /app/src
-COPY setup.py /app/src
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 
-RUN ["pip", "install" , "--no-cache-dir", "-r", "requirements.txt"]
-RUN ["pip", "install", "."]
-RUN ["rm", "-rf", "/app/src"]
 
+# STAGE
+FROM python:3.9 AS install-slider
+COPY --from=install-reqs /app/slider /app/slider
+
+RUN python -m venv /app/slider
+ENV PATH="/app/slider/bin:$PATH"
+
+COPY slider/ ./slider/
+COPY setup.py .
+RUN pip install .
+
+
+# FINAL BUILD STAGE
+# Notes on base image:
+#   - alpine lacks gnu libstdc++, so that's out
+#   - slim hopefully is sufficient; if not, we'll need to go back to full near-1G python-3.9
+FROM python:3.9-slim
 WORKDIR /app/workdir
+COPY --from=install-slider /app/slider /app/slider
 
+ENV PATH="/app/slider/bin:$PATH"
 ENTRYPOINT ["slider"]
-
 
