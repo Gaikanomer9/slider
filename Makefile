@@ -4,4 +4,4 @@ fetch_submodules:
 
 .PHONY: build_image
 build_image: fetch_submodules
-	docker build -t slider_image .
+	docker build -t slider --squash .

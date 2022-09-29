@@ -3,10 +3,10 @@ import sys
 from glob import glob
 import yaml
 from yaml import Loader
-from slo import build_slo_from_yaml
-from validator import Validator
-from rules import generate_rules
-from dashboard import generate_dashboard
+from .slo import build_slo_from_yaml
+from .validator import Validator
+from .rules import generate_rules
+from .dashboard import generate_dashboard
 
 import click
 

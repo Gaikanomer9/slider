@@ -1,6 +1,0 @@
-groups:
-- interval: 30s
-  name: test-slider-rules
-  rules:
-  - record: slider:vector
-    expr: vector(10)

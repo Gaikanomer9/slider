@@ -1,8 +1,8 @@
 import json
 import _jsonnet
-from slo import SLO
+from .slo import SLO
 
-jsonnet_file = "dashboards/jsonnet/template.jsonnet"
+jsonnet_file = "data/dashboard-template.jsonnet"
 
 
 def generate_dashboard(slo: SLO, filepath: str):

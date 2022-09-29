@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from slo import SLO
+from .slo import SLO
 from typing import List, Iterator
 import yaml
 import click

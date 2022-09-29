@@ -6,7 +6,7 @@ import requests
 from jsonschema import validate
 from jsonschema.validators import RefResolver
 from jsonschema import ValidationError, SchemaError
-from slo import SLO, OPENSLO_SCHEMA_FILES, COMMIT_SHA_OPENSLO_SCHEMA
+from .slo import SLO, OPENSLO_SCHEMA_FILES, COMMIT_SHA_OPENSLO_SCHEMA
 
 
 class Validator():
