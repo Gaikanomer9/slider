@@ -9,6 +9,7 @@ from jsonschema import ValidationError, SchemaError
 from .slo import SLO, OPENSLO_SCHEMA_FILES, COMMIT_SHA_OPENSLO_SCHEMA
 
 
+# TODO: switch to using schema files in data/OpenSLO/schemas
 class Validator():
     def __init__(self, load_schema=False):
         if load_schema:
