@@ -49,7 +49,7 @@ yaml.add_representer(RuleGroup, prom_representer)
 yaml.add_representer(Groups, prom_representer)
 
 
-def generate_rules(slos: Iterator[SLO]) -> object:
+def generate_rules(slos: Iterator[SLO], filepath: str) -> object:
     success_group_rules = []
     info_group_rules = []
     for slo in slos:
@@ -84,4 +84,5 @@ def generate_rules(slos: Iterator[SLO]) -> object:
         RuleGroup(name="slider-slo-info-metadata-logging", interval="2m30s", rules=info_group_rules)
     ]
     group = Groups(groups=rule_groups)
-    click.echo(yaml.dump(group, sort_keys=False))
+    with open(filepath, 'w') as f:
+        yaml.dump(group, f, sort_keys=False)

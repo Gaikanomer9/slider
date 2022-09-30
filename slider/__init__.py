@@ -10,6 +10,7 @@ from .dashboard import generate_dashboard
 
 import click
 
+# TODO: there shouldn't be this much stuff in __init__.py
 
 class Slider:
     def __init__(self):
@@ -19,22 +20,15 @@ class Slider:
         self.slos = {}
         self.tenant = ""
 
-    def set_config(self, key, value):
-        self.config[key] = value
-        if self.verbose:
-            click.echo(f"  config[{key}] = {value}", file=sys.stderr)
-
     def validate_all(self):
         for slo in self.slos.values():
             self.validator.validate_slo(slo)
 
-    def generate_all(self):
-        generate_rules(self.slos.values())
+    def gen_rules(self, rulefile="rules.yaml"):
+        generate_rules(self.slos.values(), rulefile)
     
-    def gen_dashboard(self):
-        if "dashpath" not in self.config:
-            raise Exception("please specify the path to save the dashboard slider --config dashpath ../playground/grafana/provisioning/dashboards/table.json ")
-        generate_dashboard(self.slos, self.config.get("dashpath"))
+    def gen_dashboard(self, dashfile="dashboard.json"):
+        generate_dashboard(self.slos, dashfile)
 
     def read_yaml_files(self, src):
         files = glob(f"{src}/*")
@@ -83,24 +77,15 @@ class AliasedGroup(click.Group):
 
 
 @click.command(cls=AliasedGroup)
-@click.option(
-    "--config",
-    nargs=2,
-    multiple=True,
-    metavar="KEY VALUE",
-    help="Overrides a config key/value pair.",
-)
 @click.option("--verbose", "-v", is_flag=True, help="Enables verbose mode.")
 @click.version_option("1.0")
 @click.pass_context
-def cli(ctx, config, verbose):
+def cli(ctx, verbose):
     """Slider is a command line tool that creates
     Prometheus rules on the given OpenSLO specification.
     """
     ctx.obj = Slider()
     ctx.obj.verbose = verbose
-    for key, value in config:
-        ctx.obj.set_config(key, value)
 
 
 @cli.command()
@@ -135,6 +120,6 @@ def generate(slider, src, tenant, gen_all):
     # Load all files and perform validation against OpenSLO schema
     slider.read_yaml_files(src)
     slider.validate_all()
-    slider.generate_all()
+    slider.gen_rules()
     if gen_all:
         slider.gen_dashboard()
