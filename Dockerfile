@@ -1,5 +1,5 @@
 # STAGE: reqs
-FROM python:3.9 AS install-reqs
+FROM python:3.10 AS install-reqs
 WORKDIR /app/src
 
 RUN python -m venv /app/slider
@@ -33,11 +33,11 @@ RUN SITEPKGSDIR="$(echo /app/slider/lib/python*/site-packages|cut -d/ -f 4-44)" 
 # FINAL BUILD STAGE
 # Notes on base image:
 #   - alpine lacks gnu libstdc++, so that's out
-#   - slim hopefully is sufficient; if not, we'll need to go back to the near-1G python:3.9
-FROM python:3.9-slim
+#   - slim hopefully is sufficient; if not, we'll need to go back to the near-1G python:3.10
+FROM python:3.10-slim
 WORKDIR /app/workdir
 COPY --from=install-reqs /app/slider /app/slider
-# Just add the <100kB of slider itself
+# Just add the <1MB of slider itself
 COPY --from=install-slider /app/justslider /app/slider
 
 
