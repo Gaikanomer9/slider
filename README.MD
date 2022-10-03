@@ -4,20 +4,27 @@ Slider is a CLI tool that creates Prometheus recording and alerting rules and Gr
 
 ## System
 
-Current status - CLI can load and validate OpenSLO specification and pass object to the rules generator.
-Rules generator is yet to be implemented.
+Current status – Proof of Concept.
+A basic dashboard and matching recording rules can be generated, but work is needed to get them to production state.
 
-### Installing CLI
+### Quickstart
 
-To get started make sure you have Python 3 installed.
-Install the tool in the current environment (venv recommended):
+The quickest way to test out slider is by running it from a container, like this:
 
-```
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-pip install --editable .
-```
+1. Set up an alias
+    ```
+    alias slider="docker run -it -v $(pwd):/app/workdir --rm quay.io/mmazur/slider"
+    ```
+2. Clone this repo
+3. Make a test run:
+    ```
+    slider generate tests/input/test1.yaml
+    ```
+4. Inspect the newly-created `rules.yaml` and `dashboard.json` files.
+
+> **Note**
+> If SELinux interferes with using the container, you can try this alias instead:
+> `alias slider="docker run -it -v $(pwd):/app/workdir:z --rm quay.io/mmazur/slider"`
 
 ### Usage
 
@@ -33,30 +40,40 @@ To verify run:
 slider verify tests/input/test1.yaml
 ```
 
-Or run `slider g examples` to load specs from the directory and all subdirectories.
+Or run `slider gen examples` to load specs from the directory and all subdirectories.
 
-### Working with Docker image
+### Setting up a development environment
 
-First, create a local image:
+The developers of this project use the following setup:
+
+```
+# from the project's root directory:
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install --editable .
+```
+
+After these commands complete the command `venv/bin/slider` will become available and any further changes you might make to the code will be immediately reflected in its runtime behavior.
+
+
+#### Building a Docker image
+
+Creating your own docker container is as simple as invoking this command:
 
 ```
 make build_image
 ```
 
-After that add a new alias to your .bashrc or command line config file:
+> **Note**
+> Running slider from a container limits its filesystem access to the current working directory the `slider` alias is invoked from.
+> If you require full filesystem access, you'll likely want to e.g. `pip install` into `/usr/local`.
 
-```
-alias slider="docker run -it -v $(pwd):/app/workdir:Z --rm slider"
-```
 
-After that you can use Slider without installation but because your current pwd would be attached as volume in container, make sure test files you submit are in the subdirectories and your provide absolute paths to them. For example,
+### Dashboard playground
 
-```
-# running this from the root directory of this repo
-slider --config dashpath $(pwd)/playground/grafana/provisioning/dashboards/table.json g $(pwd)/tests/input/test1.yaml
-```
-
-### Working with dashboards
+> **Note**
+> This info might be slightly out of date.
 
 For Grafana dashboard generation the jsonnet templating engine is used as an official and recommended way of working with Grafana dashboards programmatically.
 
