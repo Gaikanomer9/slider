@@ -22,8 +22,8 @@ The quickest way to test out slider is by running it from a container, like this
     ```
 4. Inspect the newly-created `rules.yaml` and `dashboard.json` files.
 
-> **Note**
-> If SELinux interferes with using the container, you can try this alias instead:
+> **Note**  
+> If SELinux interferes with using the container, you can try this alias instead:  
 > `alias slider="docker run -it -v $(pwd):/app/workdir:z --rm quay.io/mmazur/slider"`
 
 ### Usage
@@ -65,14 +65,14 @@ Creating your own docker container is as simple as invoking this command:
 make build_image
 ```
 
-> **Note**
+> **Note**  
 > Running slider from a container limits its filesystem access to the current working directory the `slider` alias is invoked from.
 > If you require full filesystem access, you'll likely want to e.g. `pip install` into `/usr/local`.
 
 
 ### Dashboard playground
 
-> **Note**
+> **Note**  
 > This info might be slightly out of date.
 
 For Grafana dashboard generation the jsonnet templating engine is used as an official and recommended way of working with Grafana dashboards programmatically.
