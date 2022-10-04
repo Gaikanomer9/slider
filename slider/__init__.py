@@ -27,7 +27,10 @@ class Slider:
     def gen_rules(self, rulefile="rules.yaml"):
         generate_rules(self.slos.values(), rulefile)
     
-    def gen_dashboard(self, dashfile="dashboard.json"):
+    def gen_dashboards(self, dashfile="dashboard.json"):
+        # TODO: generate a separate dashboard file per SLO
+        #       maybe use "dashboard-{{slo.id}}.json" as file template
+        #       assuming colons in filenames isn't an issue on popular filesystems
         generate_dashboard(self.slos, dashfile)
 
     def read_yaml_files(self, src):
@@ -122,4 +125,4 @@ def generate(slider, src, tenant, gen_all):
     slider.validate_all()
     slider.gen_rules()
     if gen_all:
-        slider.gen_dashboard()
+        slider.gen_dashboards()

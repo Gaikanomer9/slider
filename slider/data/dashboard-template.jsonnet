@@ -5,7 +5,7 @@ local singlestat = grafana.singlestat;
 local graphPanel = grafana.graphPanel;
 local prometheus = grafana.prometheus;
 
-local sloInfo =
+local sloTarget =
   singlestat.new(
     title='SLO Target',
     datasource='Prometheus',
@@ -18,32 +18,30 @@ local sloInfo =
     )
   );
 
-local sloRatio =
+local sloWindow =
   singlestat.new(
-    title='SLO Success Ratio',
+    title='SLO Window',
     datasource='Prometheus',
     format='none',
-    valueName='current',
-    decimals=2,
-    sparklineShow=true,
-    colorValue=true,
-    thresholds='4,6',
+    valueName='name',
   ).addTarget(
     prometheus.target(
-      'slo:success:ratio',
+      'slo:info:target',
+      legendFormat='{{ window }}',
     )
   );
 
-local ratioGraph =
+local sloSuccessRatioGraph =
   graphPanel.new(
-    title='SLO Ratio',
+    title='SLO Performance',
     datasource='Prometheus',
     linewidth=2,
     format='percentunit',
-    decimals=4,
+    decimals=2,
+    fill=0,
     aliasColors={
-      Target: 'light-green',
-      Current: 'light-red',
+      Target: 'light-red',
+      Current: 'light-blue',
     },
   ).addTarget(
     prometheus.target(
@@ -62,7 +60,7 @@ dashboard.new(
   tags=['prometheus'],
   schemaVersion=18,
   editable=true,
-  time_from='now-1h',
+  time_from='now-1d',
   refresh='1m',
 )
 .addTemplate(
@@ -85,10 +83,10 @@ dashboard.new(
 
 .addPanels(
   [
-    sloInfo { gridPos: { h: 4, w: 3, x: 0, y: 0 } },
+    sloTarget { gridPos: { h: 4, w: 3, x: 0, y: 0 } },
 
-    sloRatio { gridPos: { h: 4, w: 4, x: 3, y: 0 } },
+    sloWindow { gridPos: { h: 4, w: 4, x: 3, y: 0 } },
 
-    ratioGraph { gridPos: { h: 8, w: 7, x: 0, y: 4 } },
+    sloSuccessRatioGraph { gridPos: { h: 8, w: 7, x: 0, y: 4 } },
   ]
 )
