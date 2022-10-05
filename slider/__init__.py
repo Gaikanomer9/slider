@@ -19,19 +19,20 @@ class Slider:
         self.validator = Validator()
         self.slos = {}
         self.tenant = ""
+        self.output = ""
 
     def validate_all(self):
         for slo in self.slos.values():
             self.validator.validate_slo(slo)
 
     def gen_rules(self, rulefile="rules.yaml"):
-        generate_rules(self.slos.values(), rulefile)
+        generate_rules(self.slos.values(), rulefile, self.output)
     
     def gen_dashboards(self, dashfile="dashboard.json"):
         # TODO: generate a separate dashboard file per SLO
         #       maybe use "dashboard-{{slo.id}}.json" as file template
         #       assuming colons in filenames isn't an issue on popular filesystems
-        generate_dashboard(self.slos, dashfile)
+        generate_dashboard(self.slos, dashfile, self.output)
 
     def read_yaml_files(self, src):
         files = glob(f"{src}/*")
@@ -111,8 +112,10 @@ def verify(slider, src):
                 help="Generate both prom rules and dashboard config [default]")
 @click.option("-r", "--rules", "gen_all", flag_value=0,
                 help="Only generate recording and alerting rules, no dashboard")
+@click.option("-o", "--output", "output", type=str, default=".",
+                help="Output directory for Prometheus rules and dashboards")
 @pass_slider
-def generate(slider, src, tenant, gen_all):
+def generate(slider, src, tenant, gen_all, output):
     """Generates Prometheus rules on the given
     OpenSLO spec files.
 
@@ -120,6 +123,8 @@ def generate(slider, src, tenant, gen_all):
     """
     if tenant:
         slider.tenant = tenant
+    if output:
+        slider.output = output
     # Load all files and perform validation against OpenSLO schema
     slider.read_yaml_files(src)
     slider.validate_all()

@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from .slo import SLO
+from .utils import produce_output
 from typing import List, Iterator
 import yaml
+import os
 import click
 
 yaml.emitter.Emitter.prepare_tag = lambda self, tag: ''
@@ -49,7 +51,7 @@ yaml.add_representer(RuleGroup, prom_representer)
 yaml.add_representer(Groups, prom_representer)
 
 
-def generate_rules(slos: Iterator[SLO], filepath: str) -> object:
+def generate_rules(slos: Iterator[SLO], filepath: str, output: str) -> object:
     success_group_rules = []
     info_group_rules = []
     for slo in slos:
@@ -84,5 +86,4 @@ def generate_rules(slos: Iterator[SLO], filepath: str) -> object:
         RuleGroup(name="slider-slo-info-metadata-logging", interval="2m30s", rules=info_group_rules)
     ]
     group = Groups(groups=rule_groups)
-    with open(filepath, 'w') as f:
-        yaml.dump(group, f, sort_keys=False)
+    produce_output(output, filepath, group, {"sort_keys": False})
