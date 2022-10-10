@@ -2,15 +2,22 @@ import os
 import sys
 from glob import glob
 import yaml
-from yaml import Loader
+from decimal import Decimal
 from .slo import build_slo_from_yaml
 from .validator import Validator
 from .rules import generate_rules
 from .dashboard import generate_dashboard
+from .utils import dec_representer, decimal_constructor, Loader
 
 import click
 
 # TODO: there shouldn't be this much stuff in __init__.py
+
+
+yaml.add_representer(Decimal, dec_representer)
+yaml.Dumper.ignore_aliases = lambda *args : True
+yaml.add_constructor('!decimal', decimal_constructor, Loader)
+
 
 class Slider:
     def __init__(self):
