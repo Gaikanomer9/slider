@@ -15,7 +15,7 @@ The quickest way to test out slider is by running it from a container, like this
     ```
     alias slider="docker run -it -v $(pwd):/app/workdir --rm quay.io/mmazur/slider"
     ```
-2. Clone this repo
+2. Clone this repo (only needed to get access to the test input file).
 3. Make a test run:
     ```
     slider generate tests/input/test1.yaml
