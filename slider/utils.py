@@ -13,8 +13,9 @@ import re
 class Resolver(BaseResolver):
     pass
 
-
-Resolver.add_implicit_resolver(  # regex copied from yaml source
+# Adding implicit resolver for decimal based on
+# https://github.com/yaml/pyyaml/blob/957ae4d495cf8fcb5475c6c2f1bce801096b68a5/lib/yaml/resolver.py#L177
+Resolver.add_implicit_resolver(
     '!decimal',
     re.compile(r'''^(?:
         [-+]?(?:[0-9][0-9_]*)\.[0-9_]*(?:[eE][-+][0-9]+)?
