@@ -9,6 +9,6 @@ jsonnet_file = "dashboard-template.jsonnet"
 
 def generate_dashboard(slo: SLO, filepath: str, output: str):
     # TODO: template the jsonnet file with slo object
-    jsonnet_path = files('slider.data').joinpath(jsonnet_file)
+    jsonnet_path = files('slider').joinpath("data").joinpath(jsonnet_file)
     data = json.loads(_jsonnet.evaluate_file(str(jsonnet_path)))
     produce_output(output, filepath, data)
