@@ -1,6 +1,9 @@
+import logging
+from logging import log
 import os
 from decimal import Decimal
 import yaml
+import json
 from yaml.composer import Composer
 from yaml.constructor import SafeConstructor
 from yaml.parser import Parser
@@ -54,8 +57,13 @@ def dec_representer(dumper, value):
     return dumper.represent_scalar(u'tag:yaml.org,2002:float', text)
 
 
-def produce_output(output: str, filepath: str, data: any, yaml_dump_args: dict = {}):
+def produce_output(output: str, filepath: str, data: any, yaml_dump_args: dict = {}, format: str = "yaml"):
     os.makedirs(output, exist_ok=True)
     output_path = os.path.join(output, filepath)
     with open(output_path, 'w') as f:
-        yaml.dump(data, f, **yaml_dump_args)
+        if format == "yaml":
+            yaml.dump(data, f, **yaml_dump_args)
+        elif format == "json":
+            json.dump(data, f)
+        else:
+            log(logging.ERROR, "Invalid output format requested")

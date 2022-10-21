@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from .slo import SLO
 from .utils import produce_output
-from typing import List, Iterator
+from typing import Any, List, Iterator
 import yaml
 import os
 import click
@@ -51,7 +51,7 @@ yaml.add_representer(RuleGroup, prom_representer)
 yaml.add_representer(Groups, prom_representer)
 
 
-def generate_rules(slos: Iterator[SLO], filepath: str, output: str) -> object:
+def generate_rules(slos: Iterator[SLO], filepath: str, output: str) -> Groups:
     success_group_rules = []
     info_group_rules = []
     for slo in slos:
@@ -85,5 +85,6 @@ def generate_rules(slos: Iterator[SLO], filepath: str, output: str) -> object:
         RuleGroup(name="slider-slo-success-calculations", rules=success_group_rules),
         RuleGroup(name="slider-slo-info-metadata-logging", interval="2m30s", rules=info_group_rules)
     ]
-    group = Groups(groups=rule_groups)
-    produce_output(output, filepath, group, {"sort_keys": False})
+    groups = Groups(groups=rule_groups)
+    produce_output(output, filepath, groups, {"sort_keys": False})
+    return groups

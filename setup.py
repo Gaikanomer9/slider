@@ -12,6 +12,6 @@ setup(
     install_requires=["click"],
     entry_points="""
         [console_scripts]
-        slider=slider:cli
+        slider=slider.slider:cli
     """,
 )
