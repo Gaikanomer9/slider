@@ -68,7 +68,7 @@ local errorBudgetLeftGraph =
     },
   ).addTarget(
     prometheus.target(
-      '((1 - scalar(' + std.extVar("SLO_INFO_TARGET") + '{id="$service_id"})' + ') - (sum(sum_over_time(' + std.extVar("SLO_TOTAL_QUERY") + '['+std.extVar("SLO_WINDOW") +'])) - sum(sum_over_time(' + std.extVar("SLO_GOOD_QUERY") + '['+std.extVar("SLO_WINDOW") +'])) or vector(0)) / sum(sum_over_time(' + std.extVar("SLO_TOTAL_QUERY") + '['+std.extVar("SLO_WINDOW") +']))) / (1- scalar(' + std.extVar("SLO_INFO_TARGET") + '{id="$service_id"}))',
+      '((1 - scalar(' + std.extVar("SLO_INFO_TARGET") + '{id="$service_id"})' + ') - (sum(increase(' + std.extVar("SLO_TOTAL_QUERY") + '['+std.extVar("SLO_WINDOW") +'])) - sum(increase(' + std.extVar("SLO_GOOD_QUERY") + '['+std.extVar("SLO_WINDOW") +'])) or vector(0)) / sum(increase(' + std.extVar("SLO_TOTAL_QUERY") + '['+std.extVar("SLO_WINDOW") +']))) / (1- scalar(' + std.extVar("SLO_INFO_TARGET") + '{id="$service_id"}))',
       legendFormat='Error Budget left over SLO period',
     )
   );

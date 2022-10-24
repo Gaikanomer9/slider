@@ -9,11 +9,11 @@ spec:
       good:
         metricSource:
           spec:
-            query: http_requests{type="good"}
+            query: fake_http_requests{type="good"}
       total:
         metricSource:
           spec:
-            query: http_requests{}
+            query: fake_http_requests{type="total"}
   timeWindow:
     - duration: 7d
   # budgetingMethod: Occurrences # If not provided, the implied default is "Occurrences"

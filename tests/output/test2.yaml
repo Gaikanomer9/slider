@@ -2,7 +2,7 @@ groups:
   - name: slider-slo-success-calculations
     rules:
       - record: slo:success:ratio
-        expr: sum(rate(http_requests{type="good"}[7d])) / sum(rate(http_requests{}[7d]))
+        expr: sum(rate(fake_http_requests{type="good"}[7d])) / sum(rate(fake_http_requests{}[7d]))
         labels:
           id: test2
           window: 7d
