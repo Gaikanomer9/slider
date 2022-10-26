@@ -1,16 +1,17 @@
 # This is the non-optimized implementation, but let's start somewhere
 # (For short enough time windows this is exactly what the expression would be)
 groups:
-- name: slider1 # this will get a proper name
-  rules:
-  - record: slo:success:ratio
-    expr: sum(rate(http_requests{type="good"}[28d])) 
-      /   sum(rate(http_requests{}[28d]))
-    labels:
-      id: test1
-      name: test1 # not sure about the id/name thing yet; we'll see how that pans out
-      window: 28d
-      target: 0.9995  # percent is the natural way to think of SLOs, OTOH this is a ratio metric
-                      # so maybe better to have the target in the same format; we'll see
-                      # also, should this be a float or a string? What's the use case here?
-      budgeting_method: occurrences
+  - name: slider1 # this will get a proper name
+    rules:
+      - record: slo:success:ratio
+        expr: sum(rate(fake_http_requests{type="good"}[28d]))
+          /   sum(rate(fake_http_requests{}[28d]))
+        labels:
+          id: test1
+          name: test1 # not sure about the id/name thing yet; we'll see how that pans out
+          window: 28d
+          target:
+            0.9995 # percent is the natural way to think of SLOs, OTOH this is a ratio metric
+            # so maybe better to have the target in the same format; we'll see
+            # also, should this be a float or a string? What's the use case here?
+          budgeting_method: occurrences

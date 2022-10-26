@@ -1,15 +1,12 @@
-import os
-import logging
-from logging import log
+import json
+from importlib.resources import files
 
-import requests
 from jsonschema import validate
 from jsonschema.validators import RefResolver
 from jsonschema import ValidationError, SchemaError
-from .slo import SLO, OPENSLO_SCHEMA_FILES, COMMIT_SHA_OPENSLO_SCHEMA
+from .slo import SLO, OPENSLO_SCHEMA_FILES
 
 
-# TODO: switch to using schema files in data/OpenSLO/schemas
 class Validator():
     def __init__(self, load_schema=False):
         if load_schema:
@@ -34,15 +31,10 @@ class Validator():
     def load_schema_github(self):
         schemastore = {}
         for schema_id in OPENSLO_SCHEMA_FILES:
-            url = ('https://raw.githubusercontent.com/OpenSLO/OpenSLO/'
-                   f'{COMMIT_SHA_OPENSLO_SCHEMA}/schemas/v1/{schema_id}')
-            url = "".join(url)
-            try:
-                schema = requests.get(url).json()
-            except Exception as err:
-                log(logging.ERROR, f'Failed to fetch the url {url}')
-                log(logging.ERROR, str(err))
-                os._exit(1)
+            schema_path = files('slider').joinpath("data/OpenSLO/schemas/v1").joinpath(schema_id)
+            with open(str(schema_path)) as schema_file:
+                schema = json.loads(schema_file.read())
+
             if "$id" in schema:
                 schemastore[schema["$id"]] = schema
         return schemastore
